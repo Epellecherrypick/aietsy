@@ -1,0 +1,130 @@
+.container {
+  min-height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+}
+
+.wrapper {
+  background: white;
+  padding: 3rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 40px rgba(30, 64, 175, 0.15);
+  width: 100%;
+  max-width: 600px;
+}
+
+.wrapper h1 {
+  color: #1e40af;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.subtitle {
+  text-align: center;
+  color: #64748b;
+  font-size: 1.125rem;
+  margin-bottom: 2rem;
+}
+
+.benefits {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.benefit {
+  text-align: center;
+  padding: 1.5rem;
+  background-color: #f0f9ff;
+  border-radius: 0.75rem;
+  border: 1px solid #cbd5e1;
+}
+
+.icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.benefit h3 {
+  color: #1e40af;
+  margin: 0 0 0.5rem 0;
+  font-size: 1remrem;
+}
+
+.benefit p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+.terms {
+  padding: 2rem;
+  background-color: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: 0.375rem;
+  margin-bottom: 2rem;
+}
+
+.terms p {
+  color: #92400e;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+}
+
+.terms ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: #92400e;
+}
+
+.terms li {
+  margin-bottom: 0.5rem;
+}
+
+.confirmBtn,
+.cancelBtn {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+}
+
+.confirmBtn {
+  background-color: #1e40af;
+  color: white;
+}
+
+.confirmBtn:hover {
+  background-color: #1e3a8a;
+  transform: translateY(-2px);
+}
+
+.cancelBtn {
+  background-color: transparent;
+  color: #1e40af;
+  border: 2px solid #1e40af;
+}
+
+.cancelBtn:hover {
+  background-color: #f0f9ff;
+}
+
+@media (max-width: 480px) {
+  .wrapper {
+    padding: 1.5rem;
+  }
+
+  .benefits {
+    grid-template-columns: 1fr;
+  }
+}
