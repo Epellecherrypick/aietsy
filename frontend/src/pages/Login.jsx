@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import API from '../services/api';
 import styles from './Login.module.css';
@@ -70,7 +70,7 @@ export default function Login() {
         </form>
 
         <p className={styles.footer}>
-          Don't have an account? <a href="/register">Register here</a>
+          Don't have an account? <Link to="/register">Register here</Link>
         </p>
       </div>
     </div>

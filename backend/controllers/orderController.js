@@ -1,5 +1,6 @@
 const Order = require('../models/Order');
 const Cart = require('../models/Cart');
+const Product = require('../models/Product');
 
 exports.createOrder = async (req, res) => {
   try {
@@ -9,6 +10,15 @@ exports.createOrder = async (req, res) => {
 
     if (!cart || cart.items.length === 0) {
       return res.status(400).json({ message: 'Cart is empty' });
+    }
+
+    // Check inventory availability for all items
+    for (const item of cart.items) {
+      if (!item.productId || item.productId.inventory < item.quantity) {
+        return res.status(400).json({ 
+          message: `Insufficient stock for: ${item.productId?.title || 'Unknown Product'}` 
+        });
+      }
     }
 
     const items = cart.items.map(item => ({
@@ -29,7 +39,17 @@ exports.createOrder = async (req, res) => {
       status: 'pending',
     });
 
+    // Save the order first to ensure the transaction record exists
     await newOrder.save();
+
+    // Decrement inventory for each purchased item
+    const inventoryUpdates = cart.items.map(item => 
+      Product.findByIdAndUpdate(item.productId._id, {
+        $inc: { inventory: -item.quantity }
+      })
+    );
+    await Promise.all(inventoryUpdates);
+
     await Cart.findByIdAndUpdate(cart._id, { items: [] });
 
     res.status(201).json(newOrder);

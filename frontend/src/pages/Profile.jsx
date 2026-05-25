@@ -9,6 +9,7 @@ export default function Profile() {
     firstName: '',
     lastName: '',
     bio: '',
+    profileImage: '',
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -19,6 +20,7 @@ export default function Profile() {
         firstName: user.firstName || '',
         lastName: user.lastName || '',
         bio: user.bio || '',
+        profileImage: user.profileImage || '',
       });
     }
   }, [user]);
@@ -73,6 +75,18 @@ export default function Profile() {
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <h2>Edit Profile</h2>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="profileImage">Profile Image URL</label>
+            <input
+              type="text"
+              id="profileImage"
+              name="profileImage"
+              value={formData.profileImage}
+              onChange={handleChange}
+              placeholder="https://example.com/photo.jpg"
+            />
+          </div>
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>

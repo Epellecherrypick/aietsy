@@ -116,8 +116,11 @@ export default function ProductDetail() {
                 type="number"
                 min="1"
                 max={product.inventory}
-                value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value)))}
+                value={quantity || ''}
+                onChange={(e) => {
+                  const val = parseInt(e.target.value);
+                  setQuantity(isNaN(val) ? 1 : Math.max(1, val));
+                }}
               />
             </div>
 
@@ -181,11 +184,9 @@ export default function ProductDetail() {
           {reviews.length === 0 ? (
             <p>No reviews yet. Be the first to review!</p>
           ) : (
-            reviews.map((review, idx) => (
-              <div key={idx} className={styles.review}>
-                <div className={styles.reviewHeader}>
-                  <span className={styles.rating}>{'⭐'.repeat(review.rating)}</span>
-                </div>
+            reviews.map((review, index) => (
+              <div key={review._id || index} className={styles.review}>
+                <span className={styles.rating}>{'⭐'.repeat(review.rating)}</span>
                 <p className={styles.comment}>{review.comment}</p>
               </div>
             ))

@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import API from '../services/api';
 import styles from './Register.module.css';
@@ -111,7 +111,7 @@ export default function Register() {
         </form>
 
         <p className={styles.footer}>
-          Already have an account? <a href="/login">Login here</a>
+          Already have an account? <Link to="/login">Login here</Link>
         </p>
       </div>
     </div>

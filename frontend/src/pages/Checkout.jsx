@@ -56,12 +56,15 @@ export default function Checkout() {
       await clearCart();
       toast.success('Order placed successfully!');
 
-      const orderRef = order?._id ? order._id.slice(-6) : 'N/A';
-      const totalFormatted = order?.totalPrice?.toFixed(2) || total.toFixed(2);
+      const orderRef = order._id.slice(-6);
+      const totalFormatted = order.totalPrice.toFixed(2);
       const message = `Hi, I'd like to complete payment for order #${orderRef}. Total: $${totalFormatted}`;
       const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
-      window.location.href = waUrl;
+      // Short delay so the user can see the success toast before redirecting
+      setTimeout(() => {
+        window.location.href = waUrl;
+      }, 1500);
     } catch (error) {
       const message = error.response?.data?.message || 'Failed to place order';
       setError(message);
