@@ -39,6 +39,7 @@ export default function Register() {
       login(response.data.user, response.data.token);
       navigate('/');
     } catch (error) {
+      console.error('Registration Catch:', error);
       setError(error.response?.data?.message || 'Registration failed');
     } finally {
       setLoading(false);

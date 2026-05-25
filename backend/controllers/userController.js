@@ -29,6 +29,7 @@ exports.register = async (req, res) => {
 
     res.status(201).json({ message: 'User created', token, user: userResponse });
   } catch (error) {
+    console.error('Registration Error:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -56,6 +57,7 @@ exports.login = async (req, res) => {
 
     res.json({ message: 'Login successful', token, user: userResponse });
   } catch (error) {
+    console.error('Login Error:', error);
     res.status(500).json({ message: error.message });
   }
 };
