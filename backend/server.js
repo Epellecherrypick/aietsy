@@ -22,7 +22,7 @@ app.use('/uploads', express.static(uploadsDir));
 // Middleware
 app.use(express.json());
 // Configure CORS to allow requests from the frontend (dev + deployed)
-const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:3000', 'https://aietsy-2.onrender.com'];
+const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:3000', 'https://aietsy-3.onrender.com'];
 const corsOptions = {
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
