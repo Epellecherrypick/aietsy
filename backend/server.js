@@ -21,7 +21,20 @@ app.use('/uploads', express.static(uploadsDir));
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+// Configure CORS to allow requests from the frontend (dev + deployed)
+const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:3000', 'https://aietsy-2.onrender.com'];
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      return callback(null, true);
+    }
+    return callback(new Error('CORS policy: Origin not allowed'));
+  },
+  credentials: true,
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // Connect to MongoDB
 connectDB();
