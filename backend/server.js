@@ -21,18 +21,15 @@ app.use('/uploads', express.static(uploadsDir));
 
 // Middleware
 app.use(express.json());
-// Configure CORS to allow requests from the frontend (dev + deployed)
-const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:3000', 'https://aietsy-3.onrender.com'];
+
+// Configure CORS
 const corsOptions = {
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      return callback(null, true);
-    }
-    return callback(new Error('CORS policy: Origin not allowed'));
-  },
+  origin: ['https://aietsy-3.onrender.com', 'http://localhost:3000'],
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
+
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
