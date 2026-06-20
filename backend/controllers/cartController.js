@@ -16,6 +16,18 @@ exports.getCart = async (req, res) => {
 exports.addToCart = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    if (product.inventory < quantity) {
+      return res.status(400).json({
+        message: `Insufficient stock for: ${product.title}. Only ${product.inventory} available.`
+      });
+    }
+
     let cart = await Cart.findOne({ userId: req.userId });
 
     if (!cart) {
@@ -25,7 +37,13 @@ exports.addToCart = async (req, res) => {
     const existingItem = cart.items.find(item => item.productId.toString() === productId);
 
     if (existingItem) {
-      existingItem.quantity += quantity;
+      const newQuantity = existingItem.quantity + quantity;
+      if (newQuantity > product.inventory) {
+        return res.status(400).json({
+          message: `Insufficient stock for: ${product.title}. Only ${product.inventory} available.`
+        });
+      }
+      existingItem.quantity = newQuantity;
     } else {
       cart.items.push({ productId, quantity });
     }
@@ -75,6 +93,15 @@ exports.updateCartItem = async (req, res) => {
       if (quantity <= 0) {
         cart.items = cart.items.filter(i => i.productId.toString() !== productId);
       } else {
+        const product = await Product.findById(productId);
+        if (!product) {
+          return res.status(404).json({ message: 'Product not found' });
+        }
+        if (quantity > product.inventory) {
+          return res.status(400).json({
+            message: `Insufficient stock for: ${product.title}. Only ${product.inventory} available.`
+          });
+        }
         item.quantity = quantity;
       }
     }
