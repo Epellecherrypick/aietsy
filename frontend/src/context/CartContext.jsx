@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import API from '../services/api';
+import toast from 'react-hot-toast';
 
 export const CartContext = createContext();
 
@@ -25,6 +26,7 @@ export const CartProvider = ({ children }) => {
       setCart(response.data);
     } catch (error) {
       console.error('Error adding to cart:', error);
+      throw error;
     }
   };
 
@@ -38,6 +40,14 @@ export const CartProvider = ({ children }) => {
   };
 
   const updateCartItem = async (productId, quantity) => {
+    const item = cart?.items?.find(i => i.productId?._id === productId);
+    if (!item) return;
+
+    if (quantity > item.productId.inventory) {
+      toast.error(`Only ${item.productId.inventory} available in stock`);
+      return;
+    }
+
     try {
       const response = await API.put('/cart/update', { productId, quantity });
       setCart(response.data);

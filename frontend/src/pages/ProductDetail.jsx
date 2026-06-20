@@ -39,7 +39,11 @@ export default function ProductDetail() {
       toast.success('Added to cart!');
       setQuantity(1);
     } catch (error) {
-      toast.error('Could not add to cart. Please try again.');
+      if (error.response?.status === 401) {
+        toast.error('Please login to add items to cart');
+      } else {
+        toast.error(error.response?.data?.message || 'Could not add to cart. Please try again.');
+      }
     }
   };
 

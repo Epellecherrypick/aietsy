@@ -82,6 +82,7 @@ export default function Cart() {
                       updateCartItem(item.productId?._id, parseInt(e.target.value))
                     }
                     min="1"
+                    max={item.productId?.inventory}
                     className={styles.qtyInput}
                   />
                   <button
