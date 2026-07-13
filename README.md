@@ -58,7 +58,15 @@ MONGODB_URI=mongodb://localhost:27017/aietsy
 JWT_SECRET=your_secret_key_here
 PORT=5000
 NODE_ENV=development
+
+# Cloudinary (optional but recommended for image uploads)
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+CLOUDINARY_FOLDER=aietsy/products
 ```
+
+If Cloudinary credentials are not supplied, the app will continue to store uploaded images locally in the backend uploads folder.
 
 ### 3. Frontend Setup
 
