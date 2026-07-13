@@ -1,15 +1,15 @@
 const Product = require('../models/Product');
-const { uploadToCloudinary } = require('../config/cloudinary');
+const { uploadToCloudinary, getLocalUploadUrl } = require('../config/cloudinary');
 
-const normalizeUploadedImages = async (files = []) => {
+const normalizeUploadedImages = async (req, files = []) => {
   const uploadedImages = await Promise.all(
     files.map(async (file) => {
       if (file?.secure_url) return file.secure_url;
       if (file?.path && typeof file.path === 'string') {
         const cloudinaryUrl = await uploadToCloudinary(file);
-        return cloudinaryUrl || (file?.filename ? `/uploads/${file.filename}` : null);
+        return cloudinaryUrl || getLocalUploadUrl(req, file);
       }
-      return file?.filename ? `/uploads/${file.filename}` : null;
+      return getLocalUploadUrl(req, file);
     })
   );
 
@@ -64,7 +64,7 @@ exports.createProduct = async (req, res) => {
     const { title, description, price, category, images, inventory, tags } = req.body;
 
     // Support file uploads (via Cloudinary or local storage) + optional image URL list
-    const uploadedImages = await normalizeUploadedImages(req.files);
+    const uploadedImages = await normalizeUploadedImages(req, req.files);
 
     let parsedImages = [];
     if (images) {
@@ -107,7 +107,7 @@ exports.updateProduct = async (req, res) => {
 
     const { title, description, price, category, images, inventory, tags } = req.body;
 
-    const uploadedImages = await normalizeUploadedImages(req.files);
+    const uploadedImages = await normalizeUploadedImages(req, req.files);
 
     let parsedImages = [];
     if (images) {

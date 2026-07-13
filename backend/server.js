@@ -12,6 +12,8 @@ const orderRoutes = require('./routes/orderRoutes');
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 // Ensure upload folder exists & serve it
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {

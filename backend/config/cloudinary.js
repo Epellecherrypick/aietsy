@@ -16,6 +16,19 @@ const diskStorage = multer.diskStorage({
 
 const createProductUploadMiddleware = () => multer({ storage: diskStorage });
 
+const getLocalUploadUrl = (req, file) => {
+  if (!req?.protocol || !req?.get) {
+    return file?.filename ? `/uploads/${file.filename}` : null;
+  }
+
+  const host = req.get('host');
+  if (!host) {
+    return file?.filename ? `/uploads/${file.filename}` : null;
+  }
+
+  return `${req.protocol}://${host}/uploads/${file.filename}`;
+};
+
 const getCloudinaryConfig = () => {
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_CLOUDNAME;
   const apiKey = process.env.CLOUDINARY_API_KEY;
@@ -85,4 +98,5 @@ module.exports = {
   createProductUploadMiddleware,
   isCloudinaryConfigured,
   uploadToCloudinary,
+  getLocalUploadUrl,
 };
