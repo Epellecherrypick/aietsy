@@ -17,16 +17,21 @@ const diskStorage = multer.diskStorage({
 const createProductUploadMiddleware = () => multer({ storage: diskStorage });
 
 const getLocalUploadUrl = (req, file) => {
-  if (!req?.protocol || !req?.get) {
-    return file?.filename ? `/uploads/${file.filename}` : null;
-  }
+  if (!file?.filename) return null;
 
-  const host = req.get('host');
+  const host = req?.get?.('host');
   if (!host) {
-    return file?.filename ? `/uploads/${file.filename}` : null;
+    return `/uploads/${file.filename}`;
   }
 
-  return `${req.protocol}://${host}/uploads/${file.filename}`;
+  const forwardedProto = req?.headers?.['x-forwarded-proto'];
+  const protocol = forwardedProto
+    ? forwardedProto.split(',')[0].trim()
+    : req.secure
+      ? 'https'
+      : req.protocol || 'http';
+
+  return `${protocol}://${host}/uploads/${file.filename}`;
 };
 
 const getCloudinaryConfig = () => {
@@ -47,7 +52,7 @@ const uploadToCloudinary = async (file) => {
 
   const { cloudName, apiKey, apiSecret } = getCloudinaryConfig();
   if (!cloudName || !apiKey || !apiSecret) {
-    return `/uploads/${file.filename}`;
+    return null;
   }
 
   try {
@@ -86,9 +91,9 @@ const uploadToCloudinary = async (file) => {
     return data.secure_url || data.url;
   } catch (error) {
     console.error('Cloudinary upload failed:', error.message);
-    return `/uploads/${file.filename}`;
+    return null;
   } finally {
-    if (file?.path && fs.existsSync(file.path)) {
+    if (file?.path && fs.existsSync(file.path) && isCloudinaryConfigured()) {
       fs.unlinkSync(file.path);
     }
   }
