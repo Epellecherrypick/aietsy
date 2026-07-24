@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto');
 const multer = require('multer');
+const cloudinary = require('cloudinary').v2; // Import Cloudinary SDK
 
 const diskStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -14,7 +14,19 @@ const diskStorage = multer.diskStorage({
   },
 });
 
-const createProductUploadMiddleware = () => multer({ storage: diskStorage });
+const createProductUploadMiddleware = () =>
+  multer({
+    storage: diskStorage,
+    limits: {
+      fileSize: 5 * 1024 * 1024, // 5MB max file size
+    },
+    fileFilter: (req, file, cb) => {
+      if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
+        return cb(new Error('Only image files are allowed!'), false);
+      }
+      cb(null, true);
+    },
+  });
 
 const getLocalUploadUrl = (req, file) => {
   if (!file?.filename) return null;
@@ -47,52 +59,41 @@ const isCloudinaryConfigured = () => {
   return Boolean(cloudName && apiKey && apiSecret);
 };
 
+// Configure Cloudinary once if credentials are available
+if (isCloudinaryConfigured()) {
+  const { cloudName, apiKey, apiSecret } = getCloudinaryConfig();
+  cloudinary.config({
+    cloud_name: cloudName,
+    api_key: apiKey,
+    api_secret: apiSecret,
+    secure: true, // Always use HTTPS
+  });
+}
+
 const uploadToCloudinary = async (file) => {
   if (!file || !file.path) return null;
 
-  const { cloudName, apiKey, apiSecret } = getCloudinaryConfig();
-  if (!cloudName || !apiKey || !apiSecret) {
+  if (!isCloudinaryConfigured()) {
     return null;
   }
 
   try {
-    const fileBuffer = fs.readFileSync(file.path);
-    const formData = new FormData();
-    formData.append('file', new Blob([fileBuffer]), file.originalname);
-
     const folder = process.env.CLOUDINARY_FOLDER || 'aietsy/products';
-    const timestamp = Math.round(Date.now() / 1000);
+    const uploadOptions = {
+      folder: folder,
+      // You can add more options here, e.g., transformation, tags, public_id
+      // resource_type: 'auto', // Automatically detect file type
+      // public_id: path.parse(file.originalname).name, // Optional: use original filename as public_id
+    };
 
-    if (process.env.CLOUDINARY_UPLOAD_PRESET) {
-      formData.append('upload_preset', process.env.CLOUDINARY_UPLOAD_PRESET);
-      formData.append('folder', folder);
-    } else {
-      const signature = crypto
-        .createHash('sha256')
-        .update(`folder=${folder}&timestamp=${timestamp}${apiSecret}`)
-        .digest('hex');
+    const result = await cloudinary.uploader.upload(file.path, uploadOptions);
 
-      formData.append('api_key', apiKey);
-      formData.append('timestamp', timestamp.toString());
-      formData.append('folder', folder);
-      formData.append('signature', signature);
-    }
-
-    const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-      method: 'POST',
-      body: formData,
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.error?.message || 'Cloudinary upload failed');
-    }
-
-    return data.secure_url || data.url;
+    return result.secure_url;
   } catch (error) {
-    console.error('Cloudinary upload failed:', error.message);
+    console.error('Cloudinary SDK upload failed:', error.message);
     return null;
   } finally {
+    // Always delete the local temporary file if Cloudinary was configured and attempted to upload
     if (file?.path && fs.existsSync(file.path) && isCloudinaryConfigured()) {
       fs.unlinkSync(file.path);
     }
