@@ -44,6 +44,13 @@ app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 
+app.use((error, req, res, next) => {
+  if (res.headersSent) return next(error);
+
+  const status = error.code === 'LIMIT_FILE_SIZE' ? 413 : 400;
+  res.status(status).json({ message: error.message || 'Request failed' });
+});
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({ message: 'Server is running' });

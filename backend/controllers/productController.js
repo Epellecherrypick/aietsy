@@ -2,6 +2,10 @@ const Product = require('../models/Product');
 const { uploadToCloudinary, getLocalUploadUrl } = require('../config/cloudinary');
 
 const normalizeUploadedImages = async (req, files = []) => {
+  if (files.length && !isCloudinaryConfigured()) {
+    throw new Error('Cloudinary is not configured for image uploads');
+  }
+
   const uploadedImages = await Promise.all(
     files.map(async (file) => {
       if (file?.secure_url) return file.secure_url;

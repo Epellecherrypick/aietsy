@@ -90,11 +90,9 @@ const uploadToCloudinary = async (file) => {
 
     return result.secure_url;
   } catch (error) {
-    console.error('Cloudinary SDK upload failed:', error.message);
-    return null;
+    throw new Error(`Cloudinary upload failed: ${error.message}`);
   } finally {
-    // Always delete the local temporary file if Cloudinary was configured and attempted to upload
-    if (file?.path && fs.existsSync(file.path) && isCloudinaryConfigured()) {
+    if (file?.path && fs.existsSync(file.path)) {
       fs.unlinkSync(file.path);
     }
   }
