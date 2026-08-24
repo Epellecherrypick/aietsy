@@ -1,5 +1,5 @@
 const Product = require('../models/Product');
-const { uploadToCloudinary, getLocalUploadUrl } = require('../config/cloudinary');
+const { uploadToCloudinary, getLocalUploadUrl, isCloudinaryConfigured } = require('../config/cloudinary');
 
 const normalizeUploadedImages = async (req, files = []) => {
   if (files.length && !isCloudinaryConfigured()) {
